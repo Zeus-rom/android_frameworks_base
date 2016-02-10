@@ -23,9 +23,11 @@ import android.content.ContentUris;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Rect;
@@ -53,6 +55,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -280,6 +286,12 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateVisibilities();
         updateClockScale();
         updateAvatarScale();
+	setclockcolor();
+	setdetailcolor();
+	setweathercolor1();
+	setweathercolor2();
+	setalarmtextcolor();   
+	setbatterytextcolor();     
         setQSHeaderAlpha();
 	setHeaderColor();
         setStatusBarHeaderFontStyle(mStatusBarHeaderFontStyle);
@@ -400,6 +412,14 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
         updateClockScale();
         updateClockCollapsedMargin();
+	setclockcolor();
+	setdetailcolor();
+	setweathercolor1();
+	setweathercolor2();	
+	setalarmtextcolor();
+	    
+	setbatterytextcolor();
+	     
     }
 
     public void vibrateheader(int duration) {
@@ -461,6 +481,14 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         if (mMultiUserSwitch != null) {
             mMultiUserSwitch.setActivityStarter(activityStarter);
         }
+	setclockcolor();
+	setdetailcolor();
+	setweathercolor1();
+	setweathercolor2();
+	setalarmtextcolor();
+	    
+	setbatterytextcolor();
+	     	
     }
 
     public void setBatteryController(BatteryController batteryController) {
@@ -531,6 +559,14 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateAvatarScale();
         updateClockLp();
         requestCaptureValues();
+	setclockcolor();
+	setdetailcolor();
+	setweathercolor1();
+	setweathercolor2();
+	setalarmtextcolor();
+	    
+	setbatterytextcolor();
+	     	
     }
 
     void setTaskManagerEnabled(boolean enabled) {
@@ -568,9 +604,100 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         if (mDockBatteryLevel != null) {
             mDockBatteryLevel.setForceShown(mExpanded && mShowBatteryTextExpanded);
             mDockBatteryLevel.setVisibility(View.VISIBLE);
+	    setclockcolor();
+	    setdetailcolor();
+	    setweathercolor1();
+	    setweathercolor2();	
+	    setalarmtextcolor();
+	        
+	    setbatterytextcolor();
+	         				
         }
         applyHeaderBackgroundShadow();
     }
+
+
+   public void setclockcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mTime = (TextView) findViewById(R.id.time_view);
+	mAmPm = (TextView) findViewById(R.id.am_pm_view);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_CLOCK_COLOR, 0xFFFFFFFF);
+
+        if (mTime != null) {
+            mTime.setTextColor(color);
+        }
+	 if (mAmPm != null) {
+            mAmPm.setTextColor(color);
+        }
+	}
+
+   public void setbatterytextcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_BATTERY_TEXT_COLOR, 0xFFFFFFFF);
+
+        if (mBatteryLevel != null) {
+            mBatteryLevel.setTextColor(color);
+        	}
+	}
+
+   public void setalarmtextcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mAlarmStatus = (TextView) findViewById(R.id.alarm_status);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_ALARM_TEXT_COLOR, 0xFFFFFFFF);
+
+        if (mAlarmStatus != null) {
+            mAlarmStatus.setTextColor(color);
+        	}
+	}
+ 
+  public void setdetailcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mDateCollapsed = (TextView) findViewById(R.id.date_collapsed);
+        mDateExpanded = (TextView) findViewById(R.id.date_expanded);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_DETAIL_COLOR, 0xFFFFFFFF);
+
+        if (mDateCollapsed != null) {
+            mDateCollapsed.setTextColor(color);
+        }
+ 	if (mDateExpanded != null) {
+            mDateExpanded.setTextColor(color);
+        }
+	}
+
+  public void setweathercolor1()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mWeatherLine1 = (TextView) findViewById(R.id.weather_line_1);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_WEATHERONE_COLOR, 0xFFFFFFFF);
+
+        if (mWeatherLine1 != null) {
+            mWeatherLine1.setTextColor(color);
+        }
+	}
+
+   public void setweathercolor2()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mWeatherLine2 = (TextView) findViewById(R.id.weather_line_2);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_WEATHERTWO_COLOR, 0xFFFFFFFF);
+
+        if (mWeatherLine2 != null) {
+            mWeatherLine2.setTextColor(color);
+        }
+	}
+
+
 
     private void updateSignalClusterDetachment() {
         boolean detached = mExpanded;
@@ -1355,7 +1482,12 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                 Settings.System.STATUS_BAR_HEADER_FONT_STYLE, FONT_NORMAL,
                 UserHandle.USER_CURRENT);
             setStatusBarHeaderFontStyle(mStatusBarHeaderFontStyle);
-
+	    setclockcolor();
+	    setdetailcolor();
+	    setweathercolor1();
+	    setweathercolor2();	
+	    setalarmtextcolor();
+	    setbatterytextcolor();	    
             updateVisibilities();
             requestCaptureValues();
 	    setHeaderColor();
