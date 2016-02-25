@@ -120,6 +120,9 @@ public class NotificationPanelView extends PanelView implements
 
     public static final long DOZE_ANIMATION_DURATION = 700;
 
+    private boolean mQsColorSwitch = false;
+
+
 
     private KeyguardAffordanceHelper mAfforanceHelper;
     private StatusBarHeaderView mHeader;
@@ -272,6 +275,8 @@ public class NotificationPanelView extends PanelView implements
 
     // QS alpha
     private int mQSShadeAlpha;
+
+    private int mQSBackgroundColor;
 
     // Used to identify whether showUnlock() can dismiss the keyguard
     // or not.
@@ -537,6 +542,11 @@ public class NotificationPanelView extends PanelView implements
             }
         });
         setQSBackgroundAlpha();
+	mQsColorSwitch = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.QS_COLOR_SWITCH, 0) == 1;
+        if (mQsColorSwitch) {
+            setQSBackgroundColor();
+        }
 
         mLockPatternUtils = new CmLockPatternUtils(getContext());
     }
@@ -2862,7 +2872,21 @@ public class NotificationPanelView extends PanelView implements
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
+	   ContentResolver resolver = mContext.getContentResolver();
             update();
+	  if (uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_HEADER_TEXT_COLOR))
+                    || uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_HEADER_COLOR))) {
+                    mQSBackgroundColor = Settings.System.getInt(
+                            resolver, Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
+                    setQSBackgroundColor();
+                } else if (uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_ICON_COLOR))
+                    || uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_TEXT_COLOR))) {
+                    setQSColors();
+                }
         }
 
         public void update() {
@@ -2873,6 +2897,14 @@ public class NotificationPanelView extends PanelView implements
                     resolver, CMSettings.System.DOUBLE_TAP_SLEEP_GESTURE, 1) == 1;
             mDoubleTapToSleepAnywhere = Settings.System.getIntForUser(resolver,
                     Settings.System.DOUBLE_TAP_SLEEP_ANYWHERE, 0, UserHandle.USER_CURRENT) == 1;
+  	    mQsColorSwitch = Settings.System.getInt(
+                    resolver, Settings.System.QS_COLOR_SWITCH, 0) == 1;
+            int mQSBackgroundColor = Settings.System.getInt(
+                    resolver, Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
+	    if (mQsColorSwitch) {
+                setQSBackgroundColor();
+                setQSColors();
+            }
 
             mStatusBarLockedOnSecureKeyguard = Settings.Secure.getIntForUser(
                     resolver, Settings.Secure.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD, 1,
@@ -3059,5 +3091,24 @@ public class NotificationPanelView extends PanelView implements
         animator.addUpdateListener(mSlideInAnimationListener);
         animator.addListener(mSlideInAnimationListener);
         animator.start();
+    }
+
+ private void setQSBackgroundColor() {
+        ContentResolver resolver = mContext.getContentResolver();
+        int mQSBackgroundColor = Settings.System.getInt( mContext.getContentResolver(), 
+			Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
+        if (mQsContainer != null) {
+                mQsContainer.getBackground().setColorFilter(
+                        mQSBackgroundColor, Mode.SRC_OVER);
+            }
+        if (mQsPanel != null) {
+            mQsPanel.setDetailBackgroundColor(mQSBackgroundColor);
+        }
+    }
+
+    private void setQSColors() {
+        if (mQsPanel != null) {
+            mQsPanel.refreshAllTiles();
+        }
     }
 }
