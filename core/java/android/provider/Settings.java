@@ -4927,6 +4927,24 @@ public final class Settings {
          */
         public static final String GESTURE_ANYWHERE_FLOATING = "gesture_anywhere_floating";
 
+        /** Whether to vibrate when quick settings tile is pressed.
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_TILES_VIBRATE = "quick_settings_vibrate";
+
+        /** Whether to vibrate when quick settings tile is Single pressed.
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_SP_VIBRATE = "quick_settings_sp_vibrate";
+
+        /** Whether to vibrate when Settings icon is pressed.
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_ICON_VIBRATE = "quick_settings_icon_vibrate";
+
         /**
          * Whether to display a menu containing 'Wipe data', 'Force close' and other options
          * in the notification area and in the recent app list
