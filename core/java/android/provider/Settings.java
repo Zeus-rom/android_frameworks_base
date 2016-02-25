@@ -4945,6 +4945,19 @@ public final class Settings {
          */
         public static final String QUICK_SETTINGS_ICON_VIBRATE = "quick_settings_icon_vibrate";
 
+        /** Whether to vibrate when Header Items are pressed.
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_HEADER_VIBRATE = "quick_settings_header_vibrate";
+
+        /** Whether to vibrate when Header Items are Long pressed.
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_HEADER_VIBRATE_LONG = "quick_settings_header_vibrate_long";
+
+
         /**
          * Whether to display a menu containing 'Wipe data', 'Force close' and other options
          * in the notification area and in the recent app list
