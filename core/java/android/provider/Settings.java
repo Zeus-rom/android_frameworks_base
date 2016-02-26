@@ -3744,6 +3744,18 @@ public final class Settings {
         public static final String STATUS_BAR_DATE = "status_bar_date";
 
         /**
+         * Recents Clear All Button Style
+         * @hide
+         */
+        public static final String CLEAR_RECENTS_STYLE = "clear_recents_style";
+
+       /**
+         * Recents Clear All Button Style Switch
+         * @hide
+         */
+        public static final String CLEAR_RECENTS_STYLE_ENABLE = "clear_recents_style_enable";
+
+        /**
          * Sets the date string style
          * 0 - Regular style
          * 1 - Lowercase
