@@ -3968,6 +3968,12 @@ public final class Settings {
         public static final String RECENTS_FULL_SCREEN_CLOCK = "recents_full_screen_clock";
 
         /**
+         * Status Bar Colors Switch
+         * @hide
+         */
+        public static final String STATUSBAR_COLOR_SWITCH = "statusbar_color_switch";
+
+        /**
          * Whether to display clock while recents are in full screen
          * @hide
          */
@@ -4249,6 +4255,18 @@ public final class Settings {
                 "lockscreen_shortcuts_longpress";
 
         /**
+         * Color of Battery Icon
+         * @hide
+         */
+        public static final String BATTERY_ICON_COLOR = "battery_icon_color";
+
+        /**
+         * Color of Battery Text
+         * @hide
+         */
+        public static final String BATTERY_TEXT_COLOR = "battery_text_color";
+
+	/**
          * Whether or not to use the app sidebar
          *
          * @hide
