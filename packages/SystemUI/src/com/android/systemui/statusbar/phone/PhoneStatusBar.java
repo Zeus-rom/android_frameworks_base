@@ -712,7 +712,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 updateEmptyShadeView();
 	   }  else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_COLOR_SWITCH))) {
-                updateQsColors();
+                recreateStatusBar();
+                updateRowStates();
+                updateSpeedbump();
+                updateClearAll();
+                updateEmptyShadeView();
+		updateQsColors();
 	   } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_HEADER_TEXT_COLOR))
                     || uri.equals(Settings.System.getUriFor(
