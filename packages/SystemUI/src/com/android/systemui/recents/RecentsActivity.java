@@ -196,6 +196,11 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
         }
     });
 
+    /** Updates the recents icon if there are tasks to clear */
+    public void setRecentHints(boolean showClearRecents) {
+	    return;
+    }
+
     /** Updates the set of recent tasks */
     void updateRecentsTasks() {
         // If AlternateRecentsComponent has preloaded a load plan, then use that to prevent
