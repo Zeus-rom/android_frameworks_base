@@ -4227,6 +4227,20 @@ public final class Settings {
          */
         public static final String APP_SIDEBAR_POSITION = "app_sidebar_position";
 
+       /**
+         * Switch to Enable/Disable ScreenRecord Shorcut.
+         *
+         * @hide
+         */
+        public static final String SCREEN_RECORD_SHORTCUT_SWITCH = "screen_record_shortcut";
+        
+	/**
+         * Switch to Enable/Disable ScreenShot Shorcut.
+         *
+         * @hide
+         */
+        public static final String SCREEN_SHOT_SHORTCUT_SWITCH = "screen_shot_shortcut";
+
         /**
          * Width of the appbar trigger
          *
