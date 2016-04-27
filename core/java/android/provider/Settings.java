@@ -3889,6 +3889,12 @@ public final class Settings {
         public static final String RECENTS_FULL_SCREEN = "recents_full_screen";
 
         /**
+         * Custom Pulse Widths
+         * @hide
+         */
+        public static final String PULSE_CUSTOM_DIMEN = "pulse_custom_dimen";
+        
+        /**
          * Whether to display clock while recents are in full screen
          * @hide
          */

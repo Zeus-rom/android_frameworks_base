@@ -718,7 +718,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	    resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GESTURE_ANYWHERE_ENABLED),
                     false, this, UserHandle.USER_ALL);
-
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.PULSE_CUSTOM_DIMEN),
+                    false, this, UserHandle.USER_ALL);
 		    update();
         }
 
@@ -811,6 +813,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     || uri.equals(Settings.System.getUriFor(
                     Settings.System.CLEAR_RECENTS_STYLE_ENABLE))) 
                     {
+<<<<<<< HEAD
                	recreateStatusBar();
 	        updateRowStates();
 	        updateSpeedbump();
@@ -828,6 +831,30 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	        updateEmptyShadeView();
 	  }
             update();
+=======
+               	DontStressOnRecreate();
+		} else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.BATTERY_SAVER_MODE_COLOR))) {
+                    mBatterySaverWarningColor = Settings.System.getIntForUser(
+                            mContext.getContentResolver(),
+                            Settings.System.BATTERY_SAVER_MODE_COLOR, 1,
+                            UserHandle.USER_CURRENT);
+                    if (mBatterySaverWarningColor != 0) {
+                        mBatterySaverWarningColor = mContext.getResources()
+                                .getColor(com.android.internal.R.color.battery_saver_mode_color);
+                }
+		} else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_TINT_SWITCH))) {
+		    mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
+		} else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_BUTTON_COLOR))) {
+		    mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
+		} else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.PULSE_CUSTOM_DIMEN))) {
+		    mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
+		} 
+         update();
+>>>>>>> e15b9f9... FWB:Dyanamically Configurable Pulse Bar Dimensions [1/3]
         }
 
         @Override
