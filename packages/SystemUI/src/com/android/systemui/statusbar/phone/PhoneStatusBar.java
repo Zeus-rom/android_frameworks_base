@@ -712,6 +712,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	    resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CLEAR_RECENTS_STYLE_ENABLE),
                     false, this, UserHandle.USER_ALL);
+<<<<<<< HEAD
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_NUM_TILE_COLUMNS),
                     false, this, UserHandle.USER_ALL);
@@ -721,6 +722,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PULSE_CUSTOM_DIMEN),
                     false, this, UserHandle.USER_ALL);
+=======
+>>>>>>> 681e081... Pulse Bar Customizations [1/3]
 		    update();
         }
 
@@ -828,10 +831,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	        updateSpeedbump();
 	        updateClearAll();
 	        updateEmptyShadeView();
-	} else if (uri.equals(Settings.System.getUriFor(
-                  Settings.System.PULSE_CUSTOM_DIMEN))) {
-		  mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
-	}
+	  }
             update();
         }
 
