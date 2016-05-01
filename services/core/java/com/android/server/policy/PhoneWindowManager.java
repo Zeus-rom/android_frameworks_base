@@ -1623,7 +1623,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         @Override
         public void run() {
 	    if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.SCREEN_SHOT_SHORTCUT_SWITCH, 0) == 1) {
+                Settings.System.SCREEN_SHOT_SHORTCUT_SWITCH, 1) == 1) {
             takeScreenshot();
             } else {
              Slog.d(TAG, "ScreenShot Shortcut Disabled");
@@ -1635,7 +1635,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         @Override
         public void run() {
 	    if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.SCREEN_RECORD_SHORTCUT_SWITCH, 0) == 1) {
+                Settings.System.SCREEN_RECORD_SHORTCUT_SWITCH, 1) == 1) {
             takeScreenrecord();
             } else {
              Slog.d(TAG, "ScreenRecord Shortcut Disabled");
