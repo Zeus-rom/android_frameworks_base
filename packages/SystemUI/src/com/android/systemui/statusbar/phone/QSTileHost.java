@@ -80,6 +80,7 @@ import com.android.systemui.qs.tiles.SyncTile;
 import com.android.systemui.qs.tiles.UsbTetherTile;
 import com.android.systemui.qs.tiles.VolumeTile;
 import com.android.systemui.qs.tiles.WifiTile;
+import com.android.systemui.qs.tiles.VisualizerTile;
 import com.android.systemui.statusbar.CustomTileData;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BluetoothController;
@@ -417,6 +418,7 @@ public class QSTileHost implements QSTile.Host, Tunable {
         else if (tileSpec.equals("caffeine")) return new CaffeineTile(this);
         else if (tileSpec.equals("sound")) return new SoundTile(this);
         else if (tileSpec.equals("float_mode")) return new FloatingWindowsTile(this);
+	else if (tileSpec.equals("visualizer")) return new VisualizerTile(this);
         else if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(this,tileSpec);
         else if (TextUtils.split(tileSpec, "\\|").length == 3) {
             /** restores placeholder for
