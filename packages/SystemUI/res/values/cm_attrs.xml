@@ -71,5 +71,6 @@
             <enum name="darken" value="16" />
         </attr>
     </declare-styleable>
+
 </resources>
 
