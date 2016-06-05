@@ -659,6 +659,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_ICON_COLOR),
+                    false, this, UserHandle.USER_ALL);                   
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.CLEAR_RECENTS_STYLE),
+                    false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.CLEAR_RECENTS_STYLE_ENABLE),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_NUM_TILE_COLUMNS),
+                    false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.GESTURE_ANYWHERE_ENABLED),
                     false, this, UserHandle.USER_ALL);
 
 		    update();
@@ -705,8 +717,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_NOTIFICATION_ICONS_COLOR))) {
                 updateNotificationIconsColor();
-	   }  else if (uri.equals(Settings.System.getUriFor(
+	    }  else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.BATTERY_ICON_COLOR))) {
+                   updatebatterycolor(); 
+	    } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.BATTERY_TEXT_COLOR))) {
+                   updatebatterycolor(); 
+	    } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_COLOR_SWITCH))) {
+                updatebatterycolor();
                 recreateStatusBar();
                 updateRowStates();
                 updateSpeedbump();
@@ -720,7 +739,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 updateClearAll();
                 updateEmptyShadeView();
 		        updateQsColors();
-       } else if (uri.equals(Settings.System.getUriFor(
+           } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_ICON_COLOR))) {
                 recreateStatusBar();
                 updateRowStates();
@@ -734,7 +753,27 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     || uri.equals(Settings.System.getUriFor(
                     Settings.System.QS_BACKGROUND_COLOR))) {
                	updateQsColors();
-            }  
+	   } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.CLEAR_RECENTS_STYLE))
+                    || uri.equals(Settings.System.getUriFor(
+                    Settings.System.CLEAR_RECENTS_STYLE_ENABLE))) 
+                    {
+               	recreateStatusBar();
+	        updateRowStates();
+	        updateSpeedbump();
+	        updateClearAll();
+	        updateEmptyShadeView();
+	  } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.QS_NUM_TILE_ROWS))
+                    || uri.equals(Settings.System.getUriFor(
+                    Settings.System.QS_NUM_TILE_COLUMNS))) 
+                    {
+               	recreateStatusBar();
+	        updateRowStates();
+	        updateSpeedbump();
+	        updateClearAll();
+	        updateEmptyShadeView();
+	  }
             update();
         }
 
@@ -3021,6 +3060,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mKeyguardStatusBar != null) {
             mKeyguardStatusBar.updateNetworkIconColors();
         }
+    }
+
+    public void updatebatterycolor() {
+    int mBatteryIconColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.BATTERY_ICON_COLOR, 0xFFFFFFFF);
+      if (mIconController != null) {
+     mIconController.applyIconTint(); 
+     }
+     if (mKeyguardStatusBar != null) {
+     mKeyguardStatusBar.updateBatteryviews();
+     }
     }
 
     private void updateNetworkSignalColor() {

@@ -50,6 +50,8 @@ import com.android.systemui.statusbar.policy.KeyguardUserSwitcher;
 import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 
+import com.android.systemui.statusbar.phone.StatusBarIconController;
+
 /**
  * The header group on Keyguard.
  */
@@ -63,6 +65,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
     private ImageView mMultiUserAvatar;
     private BatteryLevelTextView mBatteryLevel;
     private BatteryLevelTextView mDockBatteryLevel;
+    private BatteryMeterView mBatteryMeterView;
 
     private TextView mCarrierLabel;
     private int mCarrierLabelSpot;
@@ -140,6 +143,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
         mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
         mDockBatteryLevel = (BatteryLevelTextView) findViewById(R.id.dock_battery_level_text);
         mCarrierLabel = (TextView) findViewById(R.id.keyguard_carrier_text);
+        mBatteryMeterView = new BatteryMeterView(mContext);
         loadDimens();
         mFastOutSlowInInterpolator = AnimationUtils.loadInterpolator(getContext(),
                 android.R.interpolator.fast_out_slow_in);
@@ -171,6 +175,8 @@ public class KeyguardStatusBarView extends RelativeLayout {
     }
 
     private void updateVisibilities() {
+    	int batterytext = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.BATTERY_TEXT_COLOR, 0xFFFFFFFF);
         if (mMultiUserSwitch.getParent() != this && !mKeyguardUserSwitcherShowing) {
             if (mMultiUserSwitch.getParent() != null) {
                 getOverlay().remove(mMultiUserSwitch);
@@ -178,6 +184,8 @@ public class KeyguardStatusBarView extends RelativeLayout {
             addView(mMultiUserSwitch, 0);
         } else if (mMultiUserSwitch.getParent() == this && mKeyguardUserSwitcherShowing) {
             removeView(mMultiUserSwitch);
+        } if(mColorSwitch) {
+        mBatteryLevel.setTextColor(batterytext);
         }
         mBatteryLevel.setVisibility(View.VISIBLE);
         if (mDockBatteryLevel != null) {
@@ -495,6 +503,17 @@ public class KeyguardStatusBarView extends RelativeLayout {
 				 Settings.System.STATUSBAR_COLOR_SWITCH, 0) == 1;
 	if(mColorSwitch) {
         mSignalCluster.applyAirplaneModeTint(StatusBarColorHelper.getAirplaneModeColor(getContext()));
+	}
+    }   
+    
+    public void updateBatteryviews() {
+	mBatteryMeterView = (BatteryMeterView) findViewById(R.id.battery);
+	int mBatteryIconColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.BATTERY_ICON_COLOR, 0xFFFFFFFF);
+    	mColorSwitch =  Settings.System.getInt(mContext.getContentResolver(),
+				 Settings.System.STATUSBAR_COLOR_SWITCH, 0) == 1;
+	if(mColorSwitch) {
+	mBatteryMeterView.setDarkIntensity(mBatteryIconColor);
 	}
     }
 }
