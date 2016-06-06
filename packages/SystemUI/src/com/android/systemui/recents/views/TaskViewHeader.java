@@ -297,7 +297,8 @@ public class TaskViewHeader extends FrameLayout {
 			  }
 		}
 		if(mActivityDescription !=null) {
-			 mActivityDescription.setTextColor(mTextColor);
+		        mActivityDescription.setTextColor(t.useLightOnPrimaryColor ?
+                mTextColor : mConfig.taskBarViewDarkTextColor);
 		}
         } else {
 		if (mDismissButton != null) {
