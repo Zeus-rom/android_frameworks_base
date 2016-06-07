@@ -77,7 +77,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStreamWriter;
 
-import com.android.internal.util.temasek.Helpers;
+import com.android.internal.util.zeus.Helpers;
 import org.cyanogenmod.internal.util.ThemeUtils;
 
 public final class ShutdownThread extends Thread {

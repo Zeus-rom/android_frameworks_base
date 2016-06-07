@@ -95,7 +95,7 @@ import cyanogenmod.hardware.CMHardwareManager;
 import cyanogenmod.providers.CMSettings;
 import dalvik.system.DexClassLoader;
 import android.text.Html;
-import com.android.internal.util.temasek.DimensionConverter;
+import com.android.internal.util.zeus.DimensionConverter;
 import android.util.DisplayMetrics;
 import android.util.EventLog;
 import android.util.Log;
@@ -7586,7 +7586,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
                 else {
                     mBootMsgDialog.setMessage("Powered By arter97 optimizations\n\n" + msg   
-                    + "\n\ntemasek cm-13.0 unofficial build");
+                    + "\n\nzeus cm-13.0 unofficial build");
                 }
             }
         });

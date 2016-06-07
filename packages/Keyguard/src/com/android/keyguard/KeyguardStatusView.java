@@ -44,9 +44,9 @@ import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
 
-import com.android.internal.util.temasek.WeatherController;
-import com.android.internal.util.temasek.WeatherControllerImpl;
-import com.android.internal.util.temasek.ImageHelper;
+import com.android.internal.util.zeus.WeatherController;
+import com.android.internal.util.zeus.WeatherControllerImpl;
+import com.android.internal.util.zeus.ImageHelper;
 import com.android.internal.widget.LockPatternUtils;
 
 import java.util.Date;
