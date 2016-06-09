@@ -104,7 +104,6 @@ public class NavigationBarView extends BaseNavigationBar {
     private boolean mIsLayoutRtl;
     private boolean mWakeAndUnlocking;
 
-    private GestureDetector mDoubleTapGesture;
     private boolean mIsHandlerCallbackActive = false;
 
     private class NavTransitionListener implements TransitionListener {

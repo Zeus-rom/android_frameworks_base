@@ -65,11 +65,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.internal.util.temasek.WeatherController;
-import com.android.internal.util.temasek.WeatherControllerImpl;
+import com.android.internal.util.zeus.WeatherController;
+import com.android.internal.util.zeus.WeatherControllerImpl;
 import com.android.internal.logging.MetricsConstants;
-import com.android.internal.util.temasek.WeatherController;
-import com.android.internal.util.temasek.WeatherControllerImpl;
+import com.android.internal.util.zeus.WeatherController;
+import com.android.internal.util.zeus.WeatherControllerImpl;
 import com.android.keyguard.KeyguardStatusView;
 import com.android.systemui.BatteryLevelTextView;
 import com.android.systemui.BatteryMeterView;

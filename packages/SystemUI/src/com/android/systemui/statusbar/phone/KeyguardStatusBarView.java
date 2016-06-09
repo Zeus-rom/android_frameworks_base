@@ -36,7 +36,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.internal.util.temasek.TemasekUtils;
+import com.android.internal.util.zeus.ZeusUtils;
 import com.android.internal.util.darkkat.StatusBarColorHelper;
 import com.android.keyguard.CarrierText;
 import com.android.systemui.BatteryLevelTextView;

@@ -392,6 +392,7 @@ public  class RecentsView extends FrameLayout implements TaskStackView.TaskStack
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final ContentResolver resolver = mContext.getContentResolver();
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
         Rect searchBarSpaceBounds = new Rect();

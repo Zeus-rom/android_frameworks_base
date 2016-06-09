@@ -3659,6 +3659,12 @@ public final class Settings {
         public static final String BATTERY_SAVER_MODE_COLOR = "battery_save_mode_color";
 
         /**
+         * Whether navigation bar is placed on the left side in landscape mode
+         * @hide
+         */
+        public static final String NAVBAR_LEFT_IN_LANDSCAPE = "navigation_bar_left";
+
+        /**
          * Whether to show the battery bar
          * @hide
          */
@@ -3711,6 +3717,18 @@ public final class Settings {
          * @hide
          */
         public static final String CLEAR_RECENTS_STYLE_ENABLE = "clear_recents_style_enable";
+
+	/**
+         * Navbar Button Color Switch
+         * @hide
+         */
+        public static final String NAVBAR_TINT_SWITCH = "navbar_tint_switch";
+        
+        /**
+         * Navbar Button Color
+         * @hide
+         */
+        public static final String NAVBAR_BUTTON_COLOR= "navbar_button_color";
 
        /**
          * Recents Clear All Button Color

@@ -23,6 +23,9 @@ import android.content.res.Resources;
 import android.content.res.ThemeConfig;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.hardware.input.InputManager;
+import android.media.AudioManager;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -318,6 +321,8 @@ public class KeyButtonView extends ImageView {
                 mPerformedLongClick = false;
                 break;
         }
+
+        return true;
     }
 
     public void playSoundEffect(int soundConstant) {

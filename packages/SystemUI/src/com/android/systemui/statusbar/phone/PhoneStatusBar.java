@@ -133,9 +133,9 @@ import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.util.cm.ActionUtils;
-import com.android.internal.util.temasek.WeatherController;
-import com.android.internal.util.temasek.WeatherController.WeatherInfo;
-import com.android.internal.util.temasek.WeatherControllerImpl;
+import com.android.internal.util.zeus.WeatherController;
+import com.android.internal.util.zeus.WeatherController.WeatherInfo;
+import com.android.internal.util.zeus.WeatherControllerImpl;
 import com.android.internal.util.cm.Blur;
 import com.android.internal.utils.du.ActionHandler;
 import com.android.internal.utils.du.DUActionUtils;
@@ -615,8 +615,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(CMSettings.System.getUriFor(
-                    CMSettings.System.NAVBAR_LEFT_IN_LANDSCAPE), false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(CMSettings.System.getUriFor(
                     CMSettings.Secure.RECENTS_LONG_PRESS_ACTIVITY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BATTERY_SAVER_MODE_COLOR),
@@ -721,6 +719,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     false, this, UserHandle.USER_ALL);
         resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.FLING_PULSE_ENABLED),
+                    false, this, UserHandle.USER_ALL);
+        resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_TINT_SWITCH),
+                    false, this, UserHandle.USER_ALL);
+	resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_BUTTON_COLOR),
                     false, this, UserHandle.USER_ALL);
 		    update();
         }
@@ -832,6 +836,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	  } else if (uri.equals(Settings.Secure.getUriFor(
                     Settings.Secure.FLING_PULSE_ENABLED))) {
 		    makepulsetoast();
+	  } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_TINT_SWITCH))) {
+		    mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
+	  } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_BUTTON_COLOR))) {
+		    mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
 	  }
             update();
         }
@@ -884,11 +894,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (mNotificationPanel != null) {
                     mNotificationPanel.setTaskManagerEnabled(showTaskManager);
                 }
-            }
-            if (mNavigationBarView != null) {
-                boolean navLeftInLandscape = CMSettings.System.getIntForUser(resolver,
-                        CMSettings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
-                mNavigationBarView.setLeftInLandscape(navLeftInLandscape);
             }
 
             // This method reads CMSettings.Secure.RECENTS_LONG_PRESS_ACTIVITY
@@ -1043,8 +1048,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNavigationBarView.setDisabledFlags(mDisabled1);
 //        addNavigationBarCallback(mNavigationBarView);
         mNavigationBarView.notifyInflateFromUser(); // let bar know we're not starting from boot
-//        addNavigationBar(true); // dynamically adding nav bar, reset System UI visibility!
-        addNavigationBar();
+        addNavigationBar(true); // dynamically adding nav bar, reset System UI visibility!
+
     }
 
     // ensure quick settings is disabled until the current user makes it through the setup wizard
@@ -2105,7 +2110,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-    private void prepareNavigationBarView() {
+    private void prepareNavigationBarView(boolean forceReset) {
         mNavigationBarView.reorient();
         mNavigationBarView.setListeners(mUserAutoHideListener);
         mNavigationBarView.setOnVerticalChangedListener(mVerticalChangedListener);

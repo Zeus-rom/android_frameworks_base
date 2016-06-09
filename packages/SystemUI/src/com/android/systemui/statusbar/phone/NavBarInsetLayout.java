@@ -35,6 +35,7 @@ import com.android.systemui.R;
 import com.android.systemui.cm.UserContentObserver;
 import com.android.systemui.statusbar.BaseStatusBar;
 import cyanogenmod.providers.CMSettings;
+import android.provider.Settings;
 
 public class NavBarInsetLayout extends FrameLayout {
     public static final String TAG = "NavBarInsetLayout";
@@ -175,7 +176,7 @@ public class NavBarInsetLayout extends FrameLayout {
         protected void observe() {
             super.observe();
             mContext.getContentResolver().registerContentObserver(
-                    CMSettings.System.getUriFor(CMSettings.System.NAVBAR_LEFT_IN_LANDSCAPE), false,
+                    Settings.System.getUriFor(Settings.System.NAVBAR_LEFT_IN_LANDSCAPE), false,
                     this, UserHandle.USER_CURRENT);
             update();
         }
@@ -189,8 +190,8 @@ public class NavBarInsetLayout extends FrameLayout {
         @Override
         protected void update() {
             boolean before = mLeftInsetMode;
-            mLeftInsetMode = CMSettings.System.getIntForUser(mContext.getContentResolver(),
-                    CMSettings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
+            mLeftInsetMode = Settings.System.getIntForUser(mContext.getContentResolver(),
+                    Settings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
             if (mLeftInsetMode != before) {
                 applyMargins();
             }

@@ -25,7 +25,7 @@ import android.provider.Settings;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
 
-import com.android.internal.util.temasek.Helpers;
+import com.android.internal.util.zeus.Helpers;
 import org.cyanogenmod.internal.logging.CMMetricsLogger;
 
 /** Quick settings tile: Heads Up **/
