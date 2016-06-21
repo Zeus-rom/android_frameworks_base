@@ -384,7 +384,7 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
                 mNotificationManager.notify(mNotificationId, n);
             } else{
                 Intent startIntent = new Intent(params.context, com.android.systemui.screenshot.ScreenshotEditor.class);
-                startIntent.putExtra("screenshotPath", mImageFilePath);
+                startIntent.putExtra(GlobalScreenshot.SCREENSHOT_FILE_PATH, mImageFilePath);
                 params.context.startService(startIntent);
             }
         }
@@ -427,7 +427,7 @@ class GlobalScreenshot {
 
     static final String CANCEL_ID = "android:cancel_id";
     static final String SCREENSHOT_URI_ID = "android:screenshot_uri_id";
-    static final String SCREENSHOT_FILE_PATH = "android:screenshot_file_path";
+    public static final String SCREENSHOT_FILE_PATH = "android:screenshot_file_path";
 
     /*package*/  static final int SCREENSHOT_NOTIFICATION_ID = 6789;
     private static final int SCREENSHOT_FLASH_TO_PEAK_DURATION = 130;
@@ -903,7 +903,7 @@ class GlobalScreenshot {
             nm.cancel(id);
 
             Intent startIntent = new Intent(this, com.android.systemui.screenshot.ScreenshotEditor.class);
-            startIntent.putExtra(ScreenshotEditor.SCREENSHOT_FILE_PATH, imageFilePath);
+            startIntent.putExtra(SCREENSHOT_FILE_PATH, imageFilePath);
             startService(startIntent);
             finish();
         }
