@@ -45,14 +45,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.PowerManager;
 import android.os.Process;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -63,6 +59,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.systemui.R;
 import com.android.systemui.screenshot.ScreenshotEditor;
@@ -86,6 +83,7 @@ class SaveImageInBackgroundData {
     int result;
     int previewWidth;
     int previewheight;
+    float previewScale;
 
     void clearImage() {
         image = null;
@@ -129,7 +127,7 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
     private boolean mIsScreenshotCropShareEnabled;
 
     SaveImageInBackgroundTask(Context context, SaveImageInBackgroundData data,
-            NotificationManager nManager) {
+            NotificationManager nManager, int nId) {
         Resources r = context.getResources();
 
         // Prepare all the output metadata
@@ -234,7 +232,7 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
 
         // By default, AsyncTask sets the worker thread to have background thread priority, so bump
         // it back up so that we save a little quicker.
-        Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_DISPLAY);
+        Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND);
 
         Context context = params[0].context;
         Bitmap image = params[0].image;
@@ -267,11 +265,7 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
             values.put(MediaStore.Images.ImageColumns.WIDTH, mImageWidth);
             values.put(MediaStore.Images.ImageColumns.HEIGHT, mImageHeight);
             values.put(MediaStore.Images.ImageColumns.SIZE, new File(mImageFilePath).length());
-
             Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            if (uri == null) {
-                throw new RuntimeException("Uri is null!");
-            }
 
             if(!mIsScreenshotCropShareEnabled){
                 // Create a share intent
@@ -320,14 +314,15 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
             params[0].image = null;
             params[0].result = 0;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to take screenshot", e);
+            // IOException/UnsupportedOperationException may be thrown if external storage is not
+            // mounted
             params[0].clearImage();
             params[0].result = 1;
-        } finally {
-            // Recycle the bitmap data
-            if (image != null) {
-                image.recycle();
-            }
+        }
+
+        // Recycle the bitmap data
+        if (image != null) {
+            image.recycle();
         }
 
         return params[0];
@@ -429,9 +424,7 @@ class GlobalScreenshot {
     static final String SCREENSHOT_URI_ID = "android:screenshot_uri_id";
     public static final String SCREENSHOT_FILE_PATH = "android:screenshot_file_path";
 
-    /*package*/  static final int SCREENSHOT_NOTIFICATION_ID = 6789;
     private static final int SCREENSHOT_FLASH_TO_PEAK_DURATION = 130;
-    private static final int SCREENSHOT_DELAY = 250;
     private static final int SCREENSHOT_DROP_IN_DURATION = 430;
     private static final int SCREENSHOT_DROP_OUT_DELAY = 500;
     private static final int SCREENSHOT_DROP_OUT_DURATION = 430;
@@ -445,9 +438,9 @@ class GlobalScreenshot {
     private static final float SCREENSHOT_DROP_OUT_MIN_SCALE_OFFSET = 0f;
     private final int mPreviewWidth;
     private final int mPreviewHeight;
+    private final float mScale;
 
     private Context mContext;
-    private PowerManager mPowerManager;
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowLayoutParams;
     private NotificationManager mNotificationManager;
@@ -471,9 +464,6 @@ class GlobalScreenshot {
 
     private MediaActionSound mCameraSound;
 
-    private final int mSfHwRotation;
-
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
      * @param context everything needs a context :(
@@ -483,8 +473,6 @@ class GlobalScreenshot {
         mContext = context;
         LayoutInflater layoutInflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        mPowerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
         // Inflate the screenshot layout
         mDisplayMatrix = new Matrix();
@@ -539,12 +527,20 @@ class GlobalScreenshot {
         mPreviewWidth = panelWidth;
         mPreviewHeight = r.getDimensionPixelSize(R.dimen.notification_max_height);
 
+        int physicalWidth = (mDisplay.getRotation() % 2 == 0) ?
+                          mDisplayMetrics.widthPixels : mDisplayMetrics.heightPixels;
+        int maxPhysicalWidth = physicalWidth;
+        Display.Mode[] modes = mDisplay.getSupportedModes();
+        for (Display.Mode mode : modes) {
+            if (physicalWidth < mode.getPhysicalWidth()) {
+                maxPhysicalWidth = mode.getPhysicalWidth();
+            }
+        }
+        mScale = (float) physicalWidth / (float) maxPhysicalWidth;
+
         // Setup the Camera shutter sound
         mCameraSound = new MediaActionSound();
         mCameraSound.load(MediaActionSound.SHUTTER_CLICK);
-
-        // Load hardware rotation from prop
-        mSfHwRotation = android.os.SystemProperties.getInt("ro.sf.hwrotation",0) / 90;
     }
 
     /**
@@ -558,10 +554,12 @@ class GlobalScreenshot {
         data.finisher = finisher;
         data.previewWidth = mPreviewWidth;
         data.previewheight = mPreviewHeight;
+        data.previewScale = mScale;
         if (mSaveInBgTask != null) {
             mSaveInBgTask.cancel(false);
         }
-        mSaveInBgTask = new SaveImageInBackgroundTask(mContext, data, mNotificationManager).execute(data);
+        mSaveInBgTask = new SaveImageInBackgroundTask(mContext, data, mNotificationManager,
+                R.id.notification_screenshot).execute(data);
     }
 
     /**
@@ -582,32 +580,13 @@ class GlobalScreenshot {
     /**
      * Takes a screenshot of the current display and shows an animation.
      */
-    void takeScreenshot(final Runnable finisher, final boolean statusBarVisible,
-            final boolean navBarVisible) {
-        // cancel notification before taking a screenshot to prevent the notification icon
-        // appearing in the status bar of the next screenshot when taking multiple screenshots
-        mNotificationManager.cancel(SCREENSHOT_NOTIFICATION_ID);
-
-        // delay taking screenshot a bit to ensure the notification icon is gone
-        mHandler.postDelayed(new Runnable() {
-            @Override public void run() {
-                takeScreenshotInternal(finisher, statusBarVisible, navBarVisible);
-            }
-        }, SCREENSHOT_DELAY);
-    }
-
-    private void takeScreenshotInternal(Runnable finisher, boolean statusBarVisible, boolean navBarVisible) {
-        // a lot of work ahead, help out a bit
-        mPowerManager.cpuBoost(1500000);
-
+    void takeScreenshot(Runnable finisher, boolean statusBarVisible, boolean navBarVisible) {
         // We need to orient the screenshot correctly (and the Surface api seems to take screenshots
         // only in the natural orientation of the device :!)
         mDisplay.getRealMetrics(mDisplayMetrics);
-        float[] dims = {mDisplayMetrics.widthPixels, mDisplayMetrics.heightPixels};
-        int rot = mDisplay.getRotation();
-        // Allow for abnormal hardware orientation
-        rot = (rot + mSfHwRotation) % 4;
-        float degrees = getDegreesForRotation(rot);
+        float[] dims = {mDisplayMetrics.widthPixels / mScale,
+                        mDisplayMetrics.heightPixels / mScale};
+        float degrees = getDegreesForRotation(mDisplay.getRotation());
         boolean requiresRotation = (degrees > 0);
         if (requiresRotation) {
             // Get the dimensions of the device in its native orientation
@@ -628,8 +607,8 @@ class GlobalScreenshot {
 
         if (requiresRotation) {
             // Rotate the screenshot to the current orientation
-            Bitmap ss = Bitmap.createBitmap(mDisplayMetrics.widthPixels,
-                    mDisplayMetrics.heightPixels, Bitmap.Config.ARGB_8888);
+            Bitmap ss = Bitmap.createBitmap((int) (mDisplayMetrics.widthPixels / mScale),
+                    (int) (mDisplayMetrics.heightPixels / mScale), Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(ss);
             c.translate(ss.getWidth() / 2, ss.getHeight() / 2);
             c.rotate(degrees);
@@ -688,10 +667,8 @@ class GlobalScreenshot {
             @Override
             public void run() {
                 // Play the shutter sound to notify that we've taken a screenshot
-                if (Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.SCREENSHOT_SOUND, 0) == 1) {
-                    mCameraSound.play(MediaActionSound.SHUTTER_CLICK);
-                }
+                if (Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREENSHOT_SOUND, 1) == 1)
+                mCameraSound.play(MediaActionSound.SHUTTER_CLICK);
 
                 mScreenshotView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
                 mScreenshotView.buildLayer();
@@ -735,7 +712,6 @@ class GlobalScreenshot {
                 mScreenshotView.setTranslationY(0f);
                 mScreenshotView.setScaleX(SCREENSHOT_SCALE + mBgPaddingScale);
                 mScreenshotView.setScaleY(SCREENSHOT_SCALE + mBgPaddingScale);
-                mScreenshotView.setRotation(5.0f);
                 mScreenshotView.setVisibility(View.VISIBLE);
                 mScreenshotFlash.setAlpha(0f);
                 mScreenshotFlash.setVisibility(View.VISIBLE);
@@ -852,7 +828,7 @@ class GlobalScreenshot {
             new Notification.BigTextStyle(b)
                 .bigText(r.getString(R.string.screenshot_failed_text))
                 .build();
-        nManager.notify(GlobalScreenshot.SCREENSHOT_NOTIFICATION_ID, n);
+        nManager.notify(R.id.notification_screenshot, n);
     }
 
     /**
@@ -861,8 +837,15 @@ class GlobalScreenshot {
     public static class TargetChosenReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (!intent.hasExtra(CANCEL_ID)) {
+                return;
+            }
+
             // Clear the notification
-            removeNotification(context);
+            final NotificationManager nm =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            final int id = intent.getIntExtra(CANCEL_ID, 0);
+            nm.cancel(id);
         }
     }
 
@@ -872,15 +855,19 @@ class GlobalScreenshot {
     public static class DeleteScreenshotReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (!intent.hasExtra(SCREENSHOT_URI_ID)) {
+            if (!intent.hasExtra(CANCEL_ID) || !intent.hasExtra(SCREENSHOT_URI_ID)) {
                 return;
             }
 
             // Clear the notification
-            removeNotification(context);
+            final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            final int id = intent.getIntExtra(CANCEL_ID, 0);
+            final Uri uri = Uri.parse(intent.getStringExtra(SCREENSHOT_URI_ID));
+            nm.cancel(id);
+
+            Toast.makeText(context, R.string.delete_screenshot_toast, Toast.LENGTH_SHORT).show();
 
             // And delete the image from the media store
-            final Uri uri = Uri.parse(intent.getStringExtra(SCREENSHOT_URI_ID));
             new DeleteImageInBackgroundTask(context).execute(uri);
         }
     }
