@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.ArraySet;
@@ -85,6 +86,10 @@ public class StatusBarIconController implements Tunable {
     private BatteryMeterView mBatteryMeterView;
     private ClockController mClockController;
     private View mCenterClockLayout;
+    private TextView mWeather;
+    private TextView mWeatherLeft;
+    private TextView mCarrier;
+    private TextView mCarrierLeft;
 
     private int mIconSize;
     private int mIconHPadding;
@@ -164,6 +169,10 @@ public class StatusBarIconController implements Tunable {
         mHandler = new Handler();
         mClockController = new ClockController(statusBar, mNotificationIcons, mHandler);
         mCenterClockLayout = statusBar.findViewById(R.id.center_clock_layout);
+        mWeather = (TextView) statusBar.findViewById(R.id.weather_temp);
+        mWeatherLeft = (TextView) statusBar.findViewById(R.id.left_weather_temp);
+        mCarrier = (TextView) statusBar.findViewById(R.id.statusbar_carrier_text);
+        mCarrierLeft = (TextView) statusBar.findViewById(R.id.left_statusbar_carrier_text);
         updateResources();
 
         TunerService.get(mContext).addTunable(this, ICON_BLACKLIST);
@@ -503,7 +512,25 @@ public class StatusBarIconController implements Tunable {
         mMoreIcon.setImageTintList(ColorStateList.valueOf(mIconTint));
 	mBatteryLevelTextView.setTextColor(mIconTint);
         mBatteryMeterView.setDarkIntensity(mDarkIntensity);
-        //mClockController.setTextColor(mIconTint);
+        if (Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_CLOCK_COLOR_SWITCH, 0,
+                UserHandle.USER_CURRENT) == 0) {
+            mClockController.setTextColor(mIconTint);
+        }
+        if (Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_WEATHER_COLOR, 0xFFFFFFFF,
+                UserHandle.USER_CURRENT) == 0xFFFFFFFF) {
+            mWeather.setTextColor(mIconTint);
+            mWeatherLeft.setTextColor(mIconTint);
+        }
+        if (Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_CARRIER_COLOR,
+                mContext.getResources().getColor(R.color.status_bar_clock_color),
+                UserHandle.USER_CURRENT) == mContext.getResources().
+                getColor(R.color.status_bar_clock_color)) {
+            mCarrier.setTextColor(mIconTint);
+            mCarrierLeft.setTextColor(mIconTint);
+        }
         applyNotificationIconsTint();
 	}
     }

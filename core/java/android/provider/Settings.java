@@ -3743,6 +3743,12 @@ public final class Settings {
         public static final String NAVBAR_BUTTON_COLOR= "navbar_button_color";
 
        /**
+         * Master switch for clock color
+         * @hide
+         */
+        public static final String STATUSBAR_CLOCK_COLOR_SWITCH = "statusbar_clock_color_switch";
+
+       /**
          * Recents Clear All Button Color
          * @hide
          */

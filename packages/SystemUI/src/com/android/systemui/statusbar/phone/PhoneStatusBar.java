@@ -669,7 +669,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CUSTOM_HEADER_SHADOW), false, this,
                     UserHandle.USER_ALL);
-	   resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_COLOR_SWITCH),
                     false, this, UserHandle.USER_ALL);        
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -696,37 +696,41 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BATTERY_TEXT_COLOR),
                     false, this, UserHandle.USER_ALL);
-	    resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_BACKGROUND_COLOR),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_ICON_COLOR),
                     false, this, UserHandle.USER_ALL);                   
-	    resolver.registerContentObserver(Settings.System.getUriFor(
-		    Settings.System.QS_TEXT_COLOR),
-		    false, this, UserHandle.USER_ALL);
-	    resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_TEXT_COLOR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CLEAR_RECENTS_STYLE),
                     false, this, UserHandle.USER_ALL);
-	    resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.CLEAR_RECENTS_STYLE_ENABLE),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_NUM_TILE_COLUMNS),
                     false, this, UserHandle.USER_ALL);
-	    resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.GESTURE_ANYWHERE_ENABLED),
                     false, this, UserHandle.USER_ALL);
-        resolver.registerContentObserver(Settings.Secure.getUriFor(
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.FLING_PULSE_ENABLED),
                     false, this, UserHandle.USER_ALL);
-        resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_TINT_SWITCH),
                     false, this, UserHandle.USER_ALL);
-	resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVBAR_BUTTON_COLOR),
                     false, this, UserHandle.USER_ALL);
-		    update();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_CLOCK_COLOR_SWITCH), false, this,
+                    UserHandle.USER_ALL);
+
+            update();
         }
 
         @Override
@@ -842,7 +846,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	  } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.NAVBAR_BUTTON_COLOR))) {
 		    mNavigationController.updateNavbarOverlay(getNavbarThemedResources());
-	  }
+      } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_CLOCK_COLOR_SWITCH))) {
+                    int mClockColorSwitch = Settings.System.getIntForUser(
+                            mContext.getContentResolver(),
+                            Settings.System.STATUSBAR_CLOCK_COLOR_SWITCH, 0,
+                            UserHandle.USER_CURRENT);
+                    recreateStatusBar();
+                    updateRowStates();
+                    updateSpeedbump();
+                    updateClearAll();
+                    updateEmptyShadeView();
+            }
             update();
         }
 
